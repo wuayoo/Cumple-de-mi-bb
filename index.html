@@ -1,0 +1,444 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Para la cachetona de papi 💕</title>
+    <!-- Fuentes Bonitas -->
+    <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&family=Quicksand:wght@500;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background-color: #f7ebe1;
+            font-family: 'Quicksand', sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        /* Fondo dinámico con partículas mágicas flotantes */
+        .magic-bg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            z-index: 1;
+            pointer-events: none;
+        }
+
+        .particle {
+            position: absolute;
+            bottom: -20px;
+            font-size: 14px;
+            animation: floatUp 6s infinite linear;
+            opacity: 0.6;
+        }
+
+        @keyframes floatUp {
+            0% {
+                transform: translateY(0) rotate(0deg);
+                opacity: 0;
+            }
+            20% { opacity: 0.8; }
+            100% {
+                transform: translateY(-100vh) rotate(360deg);
+                opacity: 0;
+            }
+        }
+
+        /* Pantalla de inicio interactiva */
+        #start-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: #f7ebe1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 100;
+            cursor: pointer;
+            transition: opacity 0.8s ease, visibility 0.8s;
+        }
+
+        .start-heart {
+            font-size: 85px;
+            animation: heartbeat 1.1s infinite ease-in-out;
+            user-select: none;
+            filter: drop-shadow(0 4px 10px rgba(230, 57, 70, 0.3));
+        }
+
+        .start-text {
+            margin-top: 20px;
+            font-size: 24px;
+            color: #d63447;
+            font-family: 'Dancing Script', cursive;
+            font-weight: bold;
+            letter-spacing: 1px;
+        }
+
+        @keyframes heartbeat {
+            0% { transform: scale(1); }
+            14% { transform: scale(1.25); }
+            28% { transform: scale(1); }
+            42% { transform: scale(1.15); }
+            70% { transform: scale(1); }
+        }
+
+        /* Contenedor principal */
+        .container {
+            width: 100%;
+            max-width: 900px;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+            padding: 15px;
+            z-index: 2;
+        }
+
+        /* Sección del Árbol */
+        .tree-container {
+            width: 100%;
+            height: 310px;
+            position: relative;
+            display: flex;
+            justify-content: center;
+            align-items: flex-end;
+        }
+
+        canvas {
+            display: block;
+        }
+
+        .ground {
+            position: absolute;
+            bottom: 0;
+            width: 90%;
+            height: 3px;
+            background-color: #795548;
+            border-radius: 2px;
+        }
+
+        /* Sección de la Carta */
+        .letter-container {
+            width: 100%;
+            padding: 15px 10px 40px 10px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+        }
+
+        .title {
+            font-family: 'Dancing Script', cursive;
+            font-size: 36px;
+            color: #d63447;
+            margin-bottom: 12px;
+            opacity: 0;
+            transition: opacity 1s ease;
+            text-shadow: 1px 1px 3px rgba(0,0,0,0.1);
+        }
+
+        .message {
+            font-family: 'Quicksand', sans-serif;
+            font-size: 17px;
+            line-height: 1.6;
+            color: #4a3e3d;
+            font-weight: 500;
+            max-width: 650px;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            text-align: left;
+            background: rgba(255, 255, 255, 0.65);
+            padding: 20px;
+            border-radius: 18px;
+            box-shadow: 0 6px 20px rgba(0,0,0,0.05);
+            border: 1px solid rgba(255, 182, 193, 0.4);
+        }
+
+        /* Adaptación para pantallas de PC */
+        @media (min-width: 769px) {
+            .container {
+                flex-direction: row;
+                height: 100vh;
+                padding: 30px;
+            }
+            .letter-container {
+                width: 50%;
+                height: 90%;
+                overflow-y: auto;
+                align-items: flex-start;
+                text-align: left;
+            }
+            .tree-container {
+                width: 50%;
+                height: 90%;
+            }
+            .title {
+                font-size: 40px;
+            }
+            .message {
+                font-size: 19px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Fondo Mágico con Partículas -->
+    <div class="magic-bg" id="magicBg"></div>
+
+    <!-- Pantalla Inicial -->
+    <div id="start-screen" onclick="startExperience()">
+        <div class="start-heart">💕</div>
+        <div class="start-text">Toca el corazón</div>
+    </div>
+
+    <!-- Contenido Principal -->
+    <div class="container">
+        <!-- Árbol en Vivo -->
+        <div class="tree-container">
+            <canvas id="treeCanvas"></canvas>
+            <div class="ground"></div>
+        </div>
+
+        <!-- Carta -->
+        <div class="letter-container">
+            <h2 class="title" id="letter-title">Para la cachetona de papi:</h2>
+            <p class="message" id="typed-text"></p>
+        </div>
+    </div>
+
+    <script>
+        const fullMessage = "Hola mi amorrr como estass? Bien cielto? Que wueno mi niña te quiero decir que estoy muy orgulloso de ti y de todas las cositas que lograste este año mi amor :), felicidades en este día tan especial mi pequee ojalá la allas pasado muy bienn y te allás divertido mutooo, yo espero no allás pasado aburridita uchh uchh, 🥹💕y ps wueno mi amor agradecido con Dios de poder pasar por segunda vez junto ati en tu cumplee, 💕espero que me permitas y quieras que yo pase contigo durante muchos cumpleaños más jejje, 💕te amo tanto mi niña cada vez veo como mi pequeña crece más y mas jiji y me gusta estar atu lado viendo como vas creciendo, no te imaginas la felicidad q siento cielito de que cumplas un añito más de vida jijiji 💕, me despido en esta corta cartita mi amor muak te amito muto mi pequeña de ojasos pechochos👸🏻";
+
+        const canvas = document.getElementById('treeCanvas');
+        const ctx = canvas.getContext('2d');
+        
+        function resizeCanvas() {
+            canvas.width = canvas.parentElement.clientWidth;
+            canvas.height = canvas.parentElement.clientHeight;
+        }
+        resizeCanvas();
+        window.addEventListener('resize', resizeCanvas);
+
+        let started = false;
+
+        function startExperience() {
+            if (started) return;
+            started = true;
+
+            const startScreen = document.getElementById('start-screen');
+            startScreen.style.opacity = '0';
+            setTimeout(() => startScreen.style.display = 'none', 800);
+
+            growTree();
+            startFloatingParticles();
+        }
+
+        // --- PARTÍCULAS FLOTANTES DE FONDO (Efecto Extra) ---
+        function startFloatingParticles() {
+            const bg = document.getElementById('magicBg');
+            const symbols = ['✨', '💖', '🌸', '⭐', '💕'];
+            
+            setInterval(() => {
+                const p = document.createElement('div');
+                p.className = 'particle';
+                p.textContent = symbols[Math.floor(Math.random() * symbols.length)];
+                p.style.left = Math.random() * 100 + 'vw';
+                p.style.animationDuration = (Math.random() * 4 + 4) + 's';
+                p.style.fontSize = (Math.random() * 10 + 12) + 'px';
+                bg.appendChild(p);
+
+                setTimeout(() => {
+                    p.remove();
+                }, 7000);
+            }, 400);
+        }
+
+        // --- SISTEMA DEL ÁRBOL DINÁMICO ---
+        let trunkProgress = 0;
+        const maxTrunk = 110;
+        let leaves = [];
+        let fallingLeaves = [];
+        const colors = ['#e63946', '#ff4d6d', '#ff758f', '#c9184a', '#ffb3c1', '#a4133c'];
+
+        function drawHeart(x, y, size, color, angle = 0) {
+            ctx.save();
+            ctx.translate(x, y);
+            ctx.rotate(angle);
+            ctx.beginPath();
+            ctx.fillStyle = color;
+            for (let t = 0; t < Math.PI * 2; t += 0.1) {
+                let hx = 16 * Math.pow(Math.sin(t), 3);
+                let hy = -(13 * Math.cos(t) - 5 * Math.cos(2*t) - 2 * Math.cos(3*t) - Math.cos(4*t));
+                if (t === 0) ctx.moveTo(hx * size, hy * size);
+                else ctx.lineTo(hx * size, hy * size);
+            }
+            ctx.fill();
+            ctx.restore();
+        }
+
+        function growTree() {
+            const startX = canvas.width / 2;
+            const startY = canvas.height - 2;
+
+            function animateTrunk() {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                
+                // Dibujar Tronco
+                ctx.beginPath();
+                ctx.strokeStyle = '#5c3d2e';
+                ctx.lineWidth = 12;
+                ctx.lineCap = 'round';
+                ctx.moveTo(startX, startY);
+                ctx.lineTo(startX, startY - trunkProgress);
+                ctx.stroke();
+
+                // Ramas principales
+                if (trunkProgress > 45) {
+                    ctx.beginPath();
+                    ctx.lineWidth = 7;
+                    ctx.moveTo(startX, startY - 45);
+                    ctx.quadraticCurveTo(startX - 25, startY - 75, startX - 45, startY - 95);
+                    ctx.stroke();
+
+                    ctx.beginPath();
+                    ctx.moveTo(startX, startY - 55);
+                    ctx.quadraticCurveTo(startX + 25, startY - 85, startX + 45, startY - 100);
+                    ctx.stroke();
+                }
+
+                if (trunkProgress < maxTrunk) {
+                    trunkProgress += 3;
+                    requestAnimationFrame(animateTrunk);
+                } else {
+                    initTreeLeaves(startX, startY - maxTrunk);
+                    startLoop();
+                    setTimeout(typeWriter, 600);
+                }
+            }
+            animateTrunk();
+        }
+
+        function initTreeLeaves(centerX, centerY) {
+            for (let i = 0; i < 320; i++) {
+                let t = Math.random() * Math.PI * 2;
+                let r = Math.sqrt(Math.random());
+                
+                let hx = 16 * Math.pow(Math.sin(t), 3);
+                let hy = -(13 * Math.cos(t) - 5 * Math.cos(2*t) - 2 * Math.cos(3*t) - Math.cos(4*t));
+                
+                leaves.push({
+                    x: centerX + (hx * 7) * r + (Math.random() * 8 - 4),
+                    y: (centerY - 30) + (hy * 7) * r + (Math.random() * 8 - 4),
+                    size: Math.random() * 0.33 + 0.23,
+                    color: colors[Math.floor(Math.random() * colors.length)],
+                    grow: 0
+                });
+            }
+        }
+
+        function startLoop() {
+            const startX = canvas.width / 2;
+            const startY = canvas.height - 2;
+
+            function render() {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+                // Tronco y ramas fijas
+                ctx.beginPath();
+                ctx.strokeStyle = '#5c3d2e';
+                ctx.lineWidth = 12;
+                ctx.lineCap = 'round';
+                ctx.moveTo(startX, startY);
+                ctx.lineTo(startX, startY - maxTrunk);
+                ctx.stroke();
+
+                ctx.beginPath();
+                ctx.lineWidth = 7;
+                ctx.moveTo(startX, startY - 45);
+                ctx.quadraticCurveTo(startX - 25, startY - 75, startX - 45, startY - 95);
+                ctx.stroke();
+
+                ctx.beginPath();
+                ctx.moveTo(startX, startY - 55);
+                ctx.quadraticCurveTo(startX + 25, startY - 85, startX + 45, startY - 100);
+                ctx.stroke();
+
+                // Hojas del árbol
+                leaves.forEach(leaf => {
+                    if (leaf.grow < leaf.size) {
+                        leaf.grow += 0.01;
+                    }
+                    drawHeart(leaf.x, leaf.y, leaf.grow, leaf.color);
+                });
+
+                // Caída de corazones
+                if (Math.random() < 0.06) {
+                    let randomLeaf = leaves[Math.floor(Math.random() * leaves.length)];
+                    fallingLeaves.push({
+                        x: randomLeaf.x,
+                        y: randomLeaf.y,
+                        size: randomLeaf.size,
+                        color: randomLeaf.color,
+                        speedY: Math.random() * 1.0 + 0.5,
+                        speedX: Math.sin(Math.random() * Math.PI) * 0.6 - 0.3,
+                        angle: 0,
+                        spin: (Math.random() - 0.5) * 0.04
+                    });
+                    randomLeaf.grow = 0; // Renace
+                }
+
+                for (let i = fallingLeaves.length - 1; i >= 0; i--) {
+                    let fl = fallingLeaves[i];
+                    fl.y += fl.speedY;
+                    fl.x += Math.sin(fl.y * 0.03) * 0.5;
+                    fl.angle += fl.spin;
+
+                    drawHeart(fl.x, fl.y, fl.size, fl.color, fl.angle);
+
+                    if (fl.y > canvas.height) {
+                        fallingLeaves.splice(i, 1);
+                    }
+                }
+
+                requestAnimationFrame(render);
+            }
+            render();
+        }
+
+        // --- EFECTO DE ESCRITURA MÁS LENTO Y FLUIDO ---
+        function typeWriter() {
+            document.getElementById('letter-title').style.opacity = '1';
+            let index = 0;
+            const element = document.getElementById('typed-text');
+
+            function addChar() {
+                if (index < fullMessage.length) {
+                    element.textContent += fullMessage.charAt(index);
+                    index++;
+                    // Aumentado a 75ms para que vaya más lentito y se disfrute más al leer
+                    setTimeout(addChar, 75); 
+                }
+            }
+            setTimeout(addChar, 400);
+        }
+    </script>
+</body>
+  </html>
+  
